@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vishwajeet Kumar | GitHub Repositories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        header {
+            background-color: #0d1117;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        header p {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .repo-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .repo-card h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .repo-card h3 a {
+            text-decoration: none;
+            color: #0969da;
+        }
+
+        .repo-card p {
+            font-size: 14px;
+            color: #555;
+            min-height: 40px;
+        }
+
+        .repo-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-top: 12px;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Vishwajeet Kumar</h1>
+    <p>My GitHub Repositories</p>
+</header>
+
+<main>
+    <div class="repo-grid" id="repoGrid">
+        Loading repositories...
+    </div>
+</main>
+
+<footer>
+    © 2026 Vishwajeet Kumar · Powered by GitHub API
+</footer>
+
+<script>
+    const username = "Vishwajeetkumar17";
+    const repoGrid = document.getElementById("repoGrid");
+
+    fetch(`https://api.github.com/users/${username}/repos?sort=updated`)
+        .then(response => response.json())
+        .then(repos => {
+            repoGrid.innerHTML = "";
+
+            repos.forEach(repo => {
+                const card = document.createElement("div");
+                card.className = "repo-card";
+
+                card.innerHTML = `
+                    <h3>
+                        <a href="${repo.html_url}" target="_blank">
+                            ${repo.name}
+                        </a>
+                    </h3>
+                    <p>${repo.description || "No description provided."}</p>
+                    <div class="repo-meta">
+                        <span>⭐ ${repo.stargazers_count}</span>
+                        <span>${repo.language || "N/A"}</span>
+                    </div>
+                `;
+
+                repoGrid.appendChild(card);
+            });
+        })
+        .catch(error => {
+            repoGrid.innerHTML = "Failed to load repositories.";
+            console.error(error);
+        });
+</script>
+
+</body>
+</html>
