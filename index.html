@@ -1,143 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Vishwajeet Kumar | GitHub Repositories</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
 
+<head>
+    <title>Asad Ali — GitHub Repositories</title>
     <style>
+        :root {
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #2563eb;
+            --border: #e2e8f0;
+            --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            background: var(--bg);
+            color: var(--text);
         }
 
         header {
-            background-color: #0d1117;
-            color: #fff;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 28px;
             text-align: center;
         }
 
-        header h1 {
+        h1 {
+            font-size: 32px;
             margin: 0;
-            font-size: 26px;
         }
 
-        header p {
-            margin-top: 6px;
+        .subtitle {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .pill {
+            background: #e0e7ff;
+            color: #1e3a8a;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .search {
+            width: 100%;
+            max-width: 520px;
+            margin: 18px auto 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search input {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            outline: none;
             font-size: 14px;
-            color: #c9d1d9;
+            background: #fff;
         }
 
-        main {
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 0 20px;
+        .search button {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .repo-grid {
+        #repos {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
         }
 
-        .repo-card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 18px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s ease;
+        .repo {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 150px;
         }
 
-        .repo-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .repo-card h3 {
-            margin: 0 0 10px;
+        .repo a {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: 700;
             font-size: 18px;
         }
 
-        .repo-card h3 a {
-            text-decoration: none;
-            color: #0969da;
-        }
-
-        .repo-card p {
+        .repo p {
+            margin: 0;
+            color: var(--muted);
             font-size: 14px;
-            color: #555;
-            min-height: 40px;
+            line-height: 1.5;
         }
 
-        .repo-meta {
+        .repo .stats {
             display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            margin-top: 12px;
-            color: #666;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: auto;
         }
 
-        footer {
+        .status {
             text-align: center;
-            padding: 20px;
-            font-size: 13px;
-            color: #666;
+            color: var(--muted);
+            margin-top: 6px;
         }
     </style>
 </head>
+
 <body>
 
-<header>
-    <h1>Vishwajeet Kumar</h1>
-    <p>My GitHub Repositories</p>
-</header>
+    <header>
+        <h1>🚀 Asad Ali’s GitHub Projects</h1>
+        <p class="subtitle">Latest public repositories, sorted by recent updates.</p>
+        <div class="meta">
+            <span class="pill">@Vishwajeetkumar17</span>
+            <span class="pill">Open Source</span>
+            <span class="pill">GitHub</span>
+        </div>
+        <div class="search">
+            <input id="search" type="text" placeholder="Search repositories..." />
+            <button id="clear" type="button">Clear</button>
+        </div>
+    </header>
 
-<main>
-    <div class="repo-grid" id="repoGrid">
-        Loading repositories...
-    </div>
-</main>
+    <div id="repos"></div>
+    <p id="status" class="status"></p>
 
-<footer>
-    © 2026 Vishwajeet Kumar · Powered by GitHub API
-</footer>
+    <script>
+        const username = "asadali2004";
+        const container = document.getElementById("repos");
+        const statusEl = document.getElementById("status");
+        const searchInput = document.getElementById("search");
+        const clearBtn = document.getElementById("clear");
 
-<script>
-    const username = "Vishwajeetkumar17";
-    const repoGrid = document.getElementById("repoGrid");
+        let allRepos = [];
 
-    fetch(`https://api.github.com/users/${username}/repos?sort=updated`)
-        .then(response => response.json())
-        .then(repos => {
-            repoGrid.innerHTML = "";
+        const renderRepos = (repos) => {
+            container.innerHTML = "";
+
+            if (!repos.length) {
+                statusEl.textContent = "No repositories found.";
+                return;
+            }
+
+            statusEl.textContent = "";
 
             repos.forEach(repo => {
-                const card = document.createElement("div");
-                card.className = "repo-card";
+                const div = document.createElement("div");
+                div.className = "repo";
 
-                card.innerHTML = `
-                    <h3>
-                        <a href="${repo.html_url}" target="_blank">
-                            ${repo.name}
-                        </a>
-                    </h3>
-                    <p>${repo.description || "No description provided."}</p>
-                    <div class="repo-meta">
-                        <span>⭐ ${repo.stargazers_count}</span>
-                        <span>${repo.language || "N/A"}</span>
-                    </div>
-                `;
+                const topics = (repo.topics || []).slice(0, 3).map(topic => `#${topic}`).join(" ");
 
-                repoGrid.appendChild(card);
+                div.innerHTML = `
+            <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
+            <p>${repo.description ?? "No description available."}</p>
+            ${topics ? `<p>${topics}</p>` : ""}
+            <div class="stats">
+                <span>★ ${repo.stargazers_count}</span>
+                <span>⑂ ${repo.forks_count}</span>
+                <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
+            </div>
+        `;
+
+                container.appendChild(div);
             });
-        })
-        .catch(error => {
-            repoGrid.innerHTML = "Failed to load repositories.";
-            console.error(error);
+        };
+
+        const applyFilter = () => {
+            const query = searchInput.value.trim().toLowerCase();
+            if (!query) {
+                renderRepos(allRepos);
+                return;
+            }
+
+            const filtered = allRepos.filter(repo =>
+                repo.name.toLowerCase().includes(query) ||
+                (repo.description && repo.description.toLowerCase().includes(query))
+            );
+
+            renderRepos(filtered);
+        };
+
+        statusEl.textContent = "Loading repositories...";
+
+        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
+            .then(res => res.json())
+            .then(data => {
+                allRepos = data
+                    .filter(repo => !repo.fork)
+                    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+                renderRepos(allRepos);
+            })
+            .catch(() => {
+                statusEl.textContent = "Unable to load repositories right now.";
+            });
+
+        searchInput.addEventListener("input", applyFilter);
+        clearBtn.addEventListener("click", () => {
+            searchInput.value = "";
+            applyFilter();
         });
-</script>
+    </script>
 
 </body>
+
 </html>
