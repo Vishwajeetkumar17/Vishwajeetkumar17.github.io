@@ -228,18 +228,44 @@
 
         statusEl.textContent = "Loading repositories...";
 
-        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
-            .then(res => res.json())
-            .then(data => {
+        async function loadRepos() {
+            try {
+                const response = await fetch(
+                    `https://api.github.com/users/${username}/repos?sort=updated&per_page=100`,
+                    {
+                        headers: {
+                            "Accept": "application/vnd.github+json",
+                            "X-GitHub-Api-Version": "2022-11-28"
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    const message = data && data.message ? data.message : "Unable to load repositories.";
+                    statusEl.textContent = message.includes("API rate limit")
+                        ? "GitHub API rate limit reached. Please refresh later."
+                        : message;
+                    return;
+                }
+
+                if (!Array.isArray(data)) {
+                    statusEl.textContent = "Unexpected response from GitHub.";
+                    return;
+                }
+
                 allRepos = data
                     .filter(repo => !repo.fork)
                     .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
                 renderRepos(allRepos);
-            })
-            .catch(() => {
+            } catch (error) {
                 statusEl.textContent = "Unable to load repositories right now.";
-            });
+            }
+        }
+
+        loadRepos();
 
         searchInput.addEventListener("input", applyFilter);
         clearBtn.addEventListener("click", () => {
