@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Asad Ali — GitHub Repositories</title>
+    <meta charset="UTF-8" />
+    <title>Vishwajeet Kumar — GitHub Repositories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <style>
         :root {
             color-scheme: light;
@@ -130,12 +133,13 @@
             font-size: 12px;
             color: var(--muted);
             margin-top: auto;
+            flex-wrap: wrap;
         }
 
         .status {
             text-align: center;
             color: var(--muted);
-            margin-top: 6px;
+            margin-top: 12px;
         }
     </style>
 </head>
@@ -143,13 +147,15 @@
 <body>
 
     <header>
-        <h1>🚀 Asad Ali’s GitHub Projects</h1>
+        <h1>🚀 Vishwajeet Kumar’s GitHub Projects</h1>
         <p class="subtitle">Latest public repositories, sorted by recent updates.</p>
+
         <div class="meta">
             <span class="pill">@Vishwajeetkumar17</span>
             <span class="pill">Open Source</span>
             <span class="pill">GitHub</span>
         </div>
+
         <div class="search">
             <input id="search" type="text" placeholder="Search repositories..." />
             <button id="clear" type="button">Clear</button>
@@ -160,7 +166,8 @@
     <p id="status" class="status"></p>
 
     <script>
-        const username = "asadali2004";
+        const username = "Vishwajeetkumar17";
+
         const container = document.getElementById("repos");
         const statusEl = document.getElementById("status");
         const searchInput = document.getElementById("search");
@@ -168,7 +175,7 @@
 
         let allRepos = [];
 
-        const renderRepos = (repos) => {
+        function renderRepos(repos) {
             container.innerHTML = "";
 
             if (!repos.length) {
@@ -182,42 +189,57 @@
                 const div = document.createElement("div");
                 div.className = "repo";
 
-                const topics = (repo.topics || []).slice(0, 3).map(topic => `#${topic}`).join(" ");
+                const topics = (repo.topics || [])
+                    .slice(0, 3)
+                    .map(t => `#${t}`)
+                    .join(" ");
 
                 div.innerHTML = `
-            <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
-            <p>${repo.description ?? "No description available."}</p>
-            ${topics ? `<p>${topics}</p>` : ""}
-            <div class="stats">
-                <span>★ ${repo.stargazers_count}</span>
-                <span>⑂ ${repo.forks_count}</span>
-                <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
-            </div>
-        `;
+                    <a href="${repo.html_url}" target="_blank" rel="noopener">
+                        ${repo.name}
+                    </a>
+                    <p>${repo.description || "No description available."}</p>
+                    ${topics ? `<p>${topics}</p>` : ""}
+                    <div class="stats">
+                        <span>★ ${repo.stargazers_count}</span>
+                        <span>⑂ ${repo.forks_count}</span>
+                        <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
+                    </div>
+                `;
 
                 container.appendChild(div);
             });
-        };
+        }
 
-        const applyFilter = () => {
+        function applyFilter() {
             const query = searchInput.value.trim().toLowerCase();
             if (!query) {
                 renderRepos(allRepos);
                 return;
             }
 
-            const filtered = allRepos.filter(repo =>
-                repo.name.toLowerCase().includes(query) ||
-                (repo.description && repo.description.toLowerCase().includes(query))
+            renderRepos(
+                allRepos.filter(repo =>
+                    repo.name.toLowerCase().includes(query) ||
+                    (repo.description && repo.description.toLowerCase().includes(query))
+                )
             );
-
-            renderRepos(filtered);
-        };
+        }
 
         statusEl.textContent = "Loading repositories...";
 
-        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
-            .then(res => res.json())
+        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`, {
+            headers: {
+                "Accept": "application/vnd.github+json",
+                "User-Agent": "Vishwajeetkumar17-GitHub-Page"
+            }
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("GitHub API error");
+                }
+                return res.json();
+            })
             .then(data => {
                 allRepos = data
                     .filter(repo => !repo.fork)
