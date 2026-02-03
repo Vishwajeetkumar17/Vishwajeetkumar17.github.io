@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8" />
     <title>Vishwajeet Kumar — GitHub Repositories</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <style>
         :root {
             color-scheme: light;
@@ -133,13 +130,12 @@
             font-size: 12px;
             color: var(--muted);
             margin-top: auto;
-            flex-wrap: wrap;
         }
 
         .status {
             text-align: center;
             color: var(--muted);
-            margin-top: 10px;
+            margin-top: 6px;
         }
     </style>
 </head>
@@ -147,15 +143,13 @@
 <body>
 
     <header>
-        <h1>🚀 Vishwajeet Kumar’s GitHub Projects</h1>
+        <h1>🚀 Vishwajeet’s GitHub Projects</h1>
         <p class="subtitle">Latest public repositories, sorted by recent updates.</p>
-
         <div class="meta">
             <span class="pill">@Vishwajeetkumar17</span>
             <span class="pill">Open Source</span>
             <span class="pill">GitHub</span>
         </div>
-
         <div class="search">
             <input id="search" type="text" placeholder="Search repositories..." />
             <button id="clear" type="button">Clear</button>
@@ -167,7 +161,6 @@
 
     <script>
         const username = "Vishwajeetkumar17";
-
         const container = document.getElementById("repos");
         const statusEl = document.getElementById("status");
         const searchInput = document.getElementById("search");
@@ -175,7 +168,7 @@
 
         let allRepos = [];
 
-        function renderRepos(repos) {
+        const renderRepos = (repos) => {
             container.innerHTML = "";
 
             if (!repos.length) {
@@ -189,29 +182,24 @@
                 const div = document.createElement("div");
                 div.className = "repo";
 
-                const topics = (repo.topics || [])
-                    .slice(0, 3)
-                    .map(topic => `#${topic}`)
-                    .join(" ");
+                const topics = (repo.topics || []).slice(0, 3).map(topic => `#${topic}`).join(" ");
 
                 div.innerHTML = `
-                <a href="${repo.html_url}" target="_blank" rel="noopener">
-                    ${repo.name}
-                </a>
-                <p>${repo.description || "No description available."}</p>
-                ${topics ? `<p>${topics}</p>` : ""}
-                <div class="stats">
-                    <span>★ ${repo.stargazers_count}</span>
-                    <span>⑂ ${repo.forks_count}</span>
-                    <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
-                </div>
-            `;
+            <a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
+            <p>${repo.description ?? "No description available."}</p>
+            ${topics ? `<p>${topics}</p>` : ""}
+            <div class="stats">
+                <span>★ ${repo.stargazers_count}</span>
+                <span>⑂ ${repo.forks_count}</span>
+                <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
+            </div>
+        `;
 
                 container.appendChild(div);
             });
-        }
+        };
 
-        function applyFilter() {
+        const applyFilter = () => {
             const query = searchInput.value.trim().toLowerCase();
             if (!query) {
                 renderRepos(allRepos);
@@ -224,48 +212,22 @@
             );
 
             renderRepos(filtered);
-        }
+        };
 
         statusEl.textContent = "Loading repositories...";
 
-        async function loadRepos() {
-            try {
-                const response = await fetch(
-                    `https://api.github.com/users/${username}/repos?sort=updated&per_page=100`,
-                    {
-                        headers: {
-                            "Accept": "application/vnd.github+json",
-                            "X-GitHub-Api-Version": "2022-11-28"
-                        }
-                    }
-                );
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    const message = data && data.message ? data.message : "Unable to load repositories.";
-                    statusEl.textContent = message.includes("API rate limit")
-                        ? "GitHub API rate limit reached. Please refresh later."
-                        : message;
-                    return;
-                }
-
-                if (!Array.isArray(data)) {
-                    statusEl.textContent = "Unexpected response from GitHub.";
-                    return;
-                }
-
+        fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
+            .then(res => res.json())
+            .then(data => {
                 allRepos = data
                     .filter(repo => !repo.fork)
                     .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
                 renderRepos(allRepos);
-            } catch (error) {
+            })
+            .catch(() => {
                 statusEl.textContent = "Unable to load repositories right now.";
-            }
-        }
-
-        loadRepos();
+            });
 
         searchInput.addEventListener("input", applyFilter);
         clearBtn.addEventListener("click", () => {
